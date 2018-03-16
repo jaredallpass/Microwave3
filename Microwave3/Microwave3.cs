@@ -62,7 +62,7 @@ public class Microwave
     /// <summary>
     /// Opens Microwave door allowing you to take your food out
     /// </summary>
-    public void OpenDoor()
+    public void TakeFoodOut()
     {
         Food = null;
         Console.WriteLine("Door is now open.");
