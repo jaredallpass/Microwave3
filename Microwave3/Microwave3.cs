@@ -3,103 +3,108 @@
 public class Microwave
 {
 
-    /// Allows a new microwave to be installed    
+    /// <summary>
+    /// Allows you to manufacture a new microwave oven
+    /// </summary>
     public Microwave()
     {       
     }
 
-    public int min;
+    private int Min;
 
-    public int minutes
+    private int Minutes
     {
-        get { return min; }
-        set { min = value; }
+        get { return Min; }
+        set { Min = value; }
     }
 
-    public int sec;
+    private int Sec;
 
-    public int seconds
+    private int Seconds
     {
-        get { return sec; }
-        set { sec = value; }
+        get { return Sec; }
+        set { Sec = value; }
     }
 
-    public TimeSpan ts;
+    private TimeSpan Ts;
 
-    public TimeSpan timer
+    private TimeSpan Timer
     {
-        get { return ts; }
-        set { ts = value; }
+        get { return Ts; }
+        set { Ts = value; }
     }
-    /// Allows you to set the minutes and seconds of how long your food must be cooked
-    public void SetTimer(TimeSpan ts)
+    /// <summary>
+    /// Sets the minutes and seconds of how long you would like to cook your food.
+    /// </summary>
+    /// <param name="Ts"></param>
+    public void SetTimer(TimeSpan Ts)
     {
-        timer = ts;
+        Timer = Ts;
+    }
+
+
+    private string Food;
+
+    private string Foods
+    {
+        get { return Food; }
+        set { Food = value; }
     }
 
     /// <summary>
-    /// ////////////////////////////////////////////////////////////////
+    /// Opens Microwave door allowing you to put your food in
     /// </summary>
-
-    public string food;
-
-    public string foods
+    public void PutFoodIn(string Food)
     {
-        get { return food; }
-        set { food = value; }
-    }
-
-    /// Allows you to specify the food you're putting in
-    public void PutFoodIn(string food)
-    {
-        foods = food;
-    }
-
-    public void TakeFoodOut()
-    {
-        food = null;
-        Console.WriteLine("Microwave is now empty");
+        Foods = Food;
     }
 
     /// <summary>
-    /// ////////////////////////////////////////////////////////////////
+    /// Opens Microwave door allowing you to take your food out
     /// </summary>
-
-    public int temp;
-
-    public int temps
+    public void OpenDoor()
     {
-        get { return temp; }
-        set { temp = value; }
+        Food = null;
+        Console.WriteLine("Door is now open.");
     }
-    /// Allows you to set the heat in degrees celsius
-    public void Temperature(int temp)
+
+
+    private int Temp;
+
+    private int Temps
     {
-        temps = temp;
+        get { return Temp; }
+        set { Temp = value; }
     }
-    /// Allows you to start your Microwave
-    public void Start()
+
+    /// <summary>
+    /// Sets the Temperature of your Microwave
+    /// </summary>
+    /// <param name="temp"></param>
+    public void SetTemperature(int Temp)
     {
-        TimeSpan tr = new TimeSpan(0, 0, 0);
-        TimeSpan tm = new TimeSpan(0, 0, 1);
-        Console.WriteLine("Heat: {0}*C", temp);
-        Console.WriteLine("Food: {0}", food);
-        while (ts > tr)
+        Temps = Temp;
+    }
+
+    /// <summary>
+    /// Starts Microwave and timer countdown
+    /// </summary>
+    public void StartMicrowave()
+    {
+        TimeSpan Tr = new TimeSpan(0, 0, 0);
+        TimeSpan Tm = new TimeSpan(0, 0, 1);
+        Console.WriteLine("Heat: {0}*C", Temp);
+        Console.WriteLine("Food: {0}", Food);
+        while (Ts > Tr)
         {
-            ts = ts - tm;
+            Ts = Ts - Tm;
 
             Console.SetCursorPosition(0, 2);
-            Console.Write("Time left: {0}", ts);
+            Console.Write("Time left: {0}", Ts);
             System.Threading.Thread.Sleep(1000);
         }
-        Console.WriteLine("Enjoy your {0}", food);
+        Console.WriteLine("Enjoy your {0}", Food);
     }
-
-    /// <summary>
-    /// ////////////////////////////////////////////////////////////////
-    /// </summary>
-    
-
 
 }
 
