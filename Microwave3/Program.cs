@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +10,11 @@ namespace Microwave3
     {
         static void Main(string[] args)
         {
+            Microwave a = new Microwave();
+            a.SetTemperature(100);
+            a.SetTimer(new TimeSpan(0, 1, 0));
+            a.PutFoodIn("Dog");
+            a.Start();
 
         }
     }
