@@ -3,6 +3,7 @@ using System.Threading;
 
 public class Microwave
 {
+
     /// <summary>
     /// Allows you to manufacture a new microwave oven
     /// </summary>
@@ -10,13 +11,9 @@ public class Microwave
     {
     }
 
+
     private TimeSpan _ts;
 
-    private TimeSpan Timer
-    {
-        get { return _ts; }
-        set { _ts = value; }
-    }
     /// <summary>
     /// Sets the minutes and seconds of how long you would like to cook your food.
     /// </summary>
@@ -31,32 +28,72 @@ public class Microwave
         {
             throw new InvalidOperationException("Timer cannot be set shorter than 10 seconds.");
         }
-        else
+
+        _ts = a;
+    }
+
+
+    /// <summary>
+    /// Retrieves the value of the amount of time remaining
+    /// </summary>
+    public void TimeRemaining()
+    {
+        Convert.ToString(_ts);
+    }
+
+
+
+    public void CurrentTemperature()
+    {
+        Convert.ToString(_temperature);
+    }
+
+    public void DoorState()
+    {
+        if (_door == false)
         {
-            Timer = a;
+            Console.WriteLine("Door is closed");
+        }
+        else if (_door == true)
+        {
+            Console.WriteLine("Door is open");
         }
     }
 
-    private string _food;
 
-    private string Food
+
+    /// <summary>
+    /// If value == true, door is open. If value == false, door is closed.
+    /// </summary>
+    private bool _door;
+
+    private void OpenDoor()
     {
-        get { return _food; }
-        set { _food = value; }
+        if (_door == false)
+        {
+            _door = true;
+        }
+        else if(_door == true)
+        {
+            throw new InvalidOperationException("Door is already open");
+        }
     }
 
-    public void PutFoodIn(string a)
+    private void CloseDoor()
     {
-        Food = a;
+        if (_door == true)
+        {
+            _door = false;
+        }
+        else if (_door == false)
+        {
+            throw new InvalidOperationException("Door is already closed");
+        }
     }
+
 
     private int _temperature;
-
-    private int Temperature
-    {
-        get { return _temperature; }
-        set { _temperature = value; }
-    }
+    
     /// <summary>
     /// Sets the Temperature of your Microwave
     /// </summary>
@@ -71,13 +108,26 @@ public class Microwave
         {
             throw new InvalidOperationException("Temperature can only be set between 10% and 100%");
         }
-        else
-        {
-        Temperature = a;
-        }
+
+        _temperature = a;       
     }
 
+    private bool _microwaveState = false;
 
+    /// <summary>
+    /// Returns a string stating whether or not the microwave is running
+    /// </summary>
+    public void MicrowaveState()
+    {
+        if (_microwaveState == false)
+        {
+            Console.WriteLine("Microwave is not running");
+        }
+        else if (_microwaveState == true)
+        {
+            Console.WriteLine("Microwave is currently running");
+        }
+    }
 
     /// <summary>
     /// Starts Microwave and timer countdown
@@ -91,32 +141,29 @@ public class Microwave
         else if (_temperature == 0)
         {
             throw new InvalidOperationException("Temperature is not set, please set your temperature to start the microwave.");
-        }
-        else
+        }    
+                   
+        TimeSpan a = new TimeSpan(0, 0, 0);
+        TimeSpan b = new TimeSpan(0, 0, 1);
+
+        while (_ts != a)
         {
-            TimeSpan a = new TimeSpan(0, 0, 0);
-            TimeSpan b = new TimeSpan(0, 0, 1);
-            Console.WriteLine("Heat: {0}*C", _temperature);
-            Console.WriteLine("Food: {0}", _food);
-            while (_ts != a)
+            _microwaveState = true;
+            _ts = _ts - b;
+            Console.Write("Time left: {0}", _ts);
+            Thread.Sleep(1000);
+            while (Console.KeyAvailable)
             {
-                _ts = _ts - b;
-                Console.SetCursorPosition(0, 2);
-                Console.Write("Time left: {0}", _ts);
-                Thread.Sleep(1000);
-                while (Console.KeyAvailable)
+                var consoleKey = Console.ReadKey(true);
+
+                if (consoleKey.Key == ConsoleKey.Escape)
                 {
-
-                    var consoleKey = Console.ReadKey(true);
-
-                    if (consoleKey.Key == ConsoleKey.Escape)
-                    {
-                        _ts = a;
-                    }
+                    _ts = a;
                 }
+
             }
-            Console.WriteLine("\r\nEnjoy your {0}", _food);
         }
+        _microwaveState = false;
     }
 }
 
