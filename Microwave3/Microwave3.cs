@@ -1,170 +1,132 @@
 using System;
 using System.Threading;
 
+/// <summary>
+/// Similates interaction with a microwave.
+/// </summary>
 public class Microwave
 {
 
     /// <summary>
-    /// Allows you to manufacture a new microwave oven
+    /// Initializes a new instance of a Microwave class.
     /// </summary>
     public Microwave()
     {
+        _temperature = 1M;
+        _timeRemaining = new TimeSpan();
+        IsCooking = false;
+        IsDoorClosed = true;
     }
 
-
-    private TimeSpan _ts;
-
+    private TimeSpan _timeRemaining;
     /// <summary>
-    /// Sets the minutes and seconds of how long you would like to cook your food.
+    /// Gets or sets the remaining cooking time. 
     /// </summary>
-    /// <param name="Ts"></param>
-    public void SetTimer(TimeSpan a)
+    public TimeSpan TimeRemaining
     {
-        if (a > new TimeSpan(0, 30, 0))
+        get
         {
-            throw new InvalidOperationException("Timer cannot be set for longer than 30 minutes.");
+            return _timeRemaining;
         }
-        else if (a < new TimeSpan(0, 0, 10))
+        set
         {
-            throw new InvalidOperationException("Timer cannot be set shorter than 10 seconds.");
-        }
+            if (value < new TimeSpan())
+            {
+                throw new InvalidOperationException("The time remaining cannot be less than 0.");
+            }
 
-        _ts = a;
+            if (IsCooking && value == new TimeSpan())
+            {
+                Stop();
+            }
+
+            _timeRemaining = value;
+        }
     }
 
-
+    private decimal _temperature;
     /// <summary>
-    /// Retrieves the value of the amount of time remaining
-    /// </summary>
-    public void TimeRemaining()
-    {
-        Convert.ToString(_ts);
-    }
-
-
-
-    public void CurrentTemperature()
-    {
-        Convert.ToString(_temperature);
-    }
-
-    public void DoorState()
-    {
-        if (_door == false)
-        {
-            Console.WriteLine("Door is closed");
-        }
-        else if (_door == true)
-        {
-            Console.WriteLine("Door is open");
-        }
-    }
-
-
-
-    /// <summary>
-    /// If value == true, door is open. If value == false, door is closed.
-    /// </summary>
-    private bool _door;
-
-    private void OpenDoor()
-    {
-        if (_door == false)
-        {
-            _door = true;
-        }
-        else if(_door == true)
-        {
-            throw new InvalidOperationException("Door is already open");
-        }
-    }
-
-    private void CloseDoor()
-    {
-        if (_door == true)
-        {
-            _door = false;
-        }
-        else if (_door == false)
-        {
-            throw new InvalidOperationException("Door is already closed");
-        }
-    }
-
-
-    private int _temperature;
-    
-    /// <summary>
-    /// Sets the Temperature of your Microwave
+    /// Gets or sets the cooking temperature as a percentage.
     /// </summary>
     /// <param name="temp"></param>
-    public void SetTemperature(int a)
+    public decimal Temperature
     {
-        if (a > 100)
+        get
         {
-            throw new InvalidOperationException("Temperature can only be set between 10% and 100%");
+            return _temperature;
         }
-        else if (a < 10)
+        set
         {
-            throw new InvalidOperationException("Temperature can only be set between 10% and 100%");
-        }
+            if (value > 1M)
+            {
+                throw new InvalidOperationException("Temperature can only be set between 10% and 100%.");
+            }
+            else if (value < 0.1M)
+            {
+                throw new InvalidOperationException("Temperature can only be set between 10% and 100%.");
+            }
 
-        _temperature = a;       
+            _temperature = value;
+        }
     }
-
-    private bool _microwaveState = false;
 
     /// <summary>
-    /// Returns a string stating whether or not the microwave is running
+    /// Returns true if the door is closed.
     /// </summary>
-    public void MicrowaveState()
-    {
-        if (_microwaveState == false)
-        {
-            Console.WriteLine("Microwave is not running");
-        }
-        else if (_microwaveState == true)
-        {
-            Console.WriteLine("Microwave is currently running");
-        }
-    }
+    public bool IsDoorClosed { get; set; }
+
+    /// <summary>
+    /// Returns true if the microwave is busy cooking else returns false.
+    /// </summary>
+    public bool IsCooking { get; private set; }
 
     /// <summary>
     /// Starts Microwave and timer countdown
     /// </summary>
     public void Start()
     {
-        if (_ts == new TimeSpan(0, 0, 0))
+        if (TimeRemaining == new TimeSpan(0, 0, 0))
         {
-            throw new InvalidOperationException("Timer not set, please set your timer to start the microwave.");
+            throw new InvalidOperationException("A time remaining is required to start cooking.");
         }
-        else if (_temperature == 0)
+
+        if (!IsDoorClosed)
         {
-            throw new InvalidOperationException("Temperature is not set, please set your temperature to start the microwave.");
-        }    
-                   
-        TimeSpan a = new TimeSpan(0, 0, 0);
-        TimeSpan b = new TimeSpan(0, 0, 1);
-
-        while (_ts != a)
-        {
-            _microwaveState = true;
-            _ts = _ts - b;
-            Console.Write("Time left: {0}", _ts);
-            Thread.Sleep(1000);
-            while (Console.KeyAvailable)
-            {
-                var consoleKey = Console.ReadKey(true);
-
-                if (consoleKey.Key == ConsoleKey.Escape)
-                {
-                    _ts = a;
-                }
-
-            }
+            throw new InvalidOperationException("The door must be closed to start cooking.");
         }
-        _microwaveState = false;
+
+        IsCooking = true;
+        if (Timer == null)
+        {
+            Timer = new Timer(new TimerCallback((o) => Cook()), null, 0, 1000);
+        }
     }
+
+    private Timer Timer { get; set;  }
+
+    /// <summary>
+    /// Executes the cooking processes.
+    /// </summary>
+    private void Cook()
+    {
+        TimeRemaining = TimeRemaining.Subtract(new TimeSpan(0, 0, 1));
+
+        //if (TimeRemaining == new TimeSpan())
+        //{
+        //    Stop();
+        //}
+    }
+
+    /// <summary>
+    /// Stops the cooking process.
+    /// </summary>
+    public void Stop()
+    {
+        IsCooking = false;
+        Timer.Dispose();
+        Timer = null;
+    }
+
 }
 
 
